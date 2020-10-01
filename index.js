@@ -1,8 +1,10 @@
 // import deps
 const fs = require("fs");
+const path = require("path");
 const util = require("util");
 
 const writeFile = util.promisify(fs.writeFile);
+const mkdir = util.promisify(fs.mkdir);
 
 main();
 
@@ -18,13 +20,26 @@ async function main() {
   */
 
   try {
-    await writeFile("index.html", renderHtml({ title: "My Site" }));
+    const siteTitle = "My Site";
+    const siteName = "my-site";
+    const sitePath = path.join(process.cwd(), siteName)
+    const siteFolders = ["images", "scripts", "stylesheets"];
+
+    await mkdir(siteName);
+    await Promise.all(
+      siteFolders.map((folder) => mkdir(path.join(sitePath, folder)))
+    );
+
+    await writeFile(
+      path.join(siteName, "index.html"),
+      renderHtml({ title: siteTitle })
+    );
+
     // save html string in <site-name>/index.html
-    console.log("Created SITE_NAME: PATH_TO_SITE_FOLDER");
+    console.log(`Created ${siteName}: ${sitePath}`);
   } catch (error) {
     console.log(error);
   }
-    
 }
 
 function renderHtml({ title }) {
