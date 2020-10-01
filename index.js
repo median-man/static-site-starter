@@ -2,6 +2,7 @@
 const fs = require("fs");
 const path = require("path");
 const util = require("util");
+const inquirer = require("inquirer");
 
 const writeFile = util.promisify(fs.writeFile);
 const mkdir = util.promisify(fs.mkdir);
@@ -10,11 +11,19 @@ main();
 
 async function main() {
   // prompt user for name of the site
-
   try {
-    const siteTitle = "My Super Site";
-    const siteName = siteTitle.replace(/\s+/g, "-").toLowerCase();
-    const sitePath = path.join(process.cwd(), siteName)
+    const { siteTitle } = await inquirer.prompt([
+      {
+        name: "siteTitle",
+        type: "input",
+        message: "Enter a title for your site: (e.g. My Site)",
+      },
+    ]);
+    const siteName = siteTitle
+      .replace(/[`~!@#$%^&*()|+=?;:'",.<>\{\}\[\]\\\/]/g, "")
+      .replace(/\s+/g, "-")
+      .toLowerCase();
+    const sitePath = path.join(process.cwd(), siteName);
     const siteFolders = ["images", "scripts", "stylesheets"];
 
     await mkdir(siteName);
