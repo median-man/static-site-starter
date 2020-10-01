@@ -11,17 +11,9 @@ main();
 async function main() {
   // prompt user for name of the site
 
-  /*
-    create the following folders:
-      - <site-name> (all lower case, use dashes for spaces)
-        - images
-        - scripts
-        - stylesheets
-  */
-
   try {
-    const siteTitle = "My Site";
-    const siteName = "my-site";
+    const siteTitle = "My Super Site";
+    const siteName = siteTitle.replace(/\s+/g, "-").toLowerCase();
     const sitePath = path.join(process.cwd(), siteName)
     const siteFolders = ["images", "scripts", "stylesheets"];
 
