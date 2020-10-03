@@ -12,7 +12,7 @@ main();
 async function main() {
   // prompt user for name of the site
   try {
-    const { siteTitle, useJquery } = await inquirer.prompt([
+    const { siteTitle, useJquery, useBootstrap } = await inquirer.prompt([
       {
         name: "siteTitle",
         type: "input",
@@ -21,7 +21,12 @@ async function main() {
       {
         name: "useJquery",
         type: "confirm",
-        message: "Include jQuery 3.5 from cdnjs?"
+        message: "Include jQuery 3.5 from cdnjs?",
+      },
+      {
+        name: "useBootstrap",
+        type: "confirm",
+        message: "Include Bootstrap 4?",
       }
     ]);
     const siteName = siteTitle
@@ -38,7 +43,7 @@ async function main() {
 
     await writeFile(
       path.join(siteName, "index.html"),
-      renderHtml({ title: siteTitle, useJquery })
+      renderHtml({ title: siteTitle, useJquery, useBootstrap })
     );
 
     // save html string in <site-name>/index.html
@@ -48,8 +53,18 @@ async function main() {
   }
 }
 
-function renderHtml({ title, useJquery }) {
-  const jqueryScript = '<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg=="crossorigin="anonymous"></script>';
+function renderHtml({ title, useJquery, useBootstrap }) {
+  const jqueryScript =
+    '<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg=="crossorigin="anonymous"></script>';
+  const jquerySlimScript = `<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>`;
+  const popperScript = `<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>`;
+  const bs4Script = `<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>`;
+  const scripts = [];
+  if (useJquery) {
+    scripts.push(jqueryScript);
+  } else if (useBootstrap) {
+    scripts.push(jquerySlimScript, popperScript, bs4Script);
+  }
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -59,7 +74,7 @@ function renderHtml({ title, useJquery }) {
 </head>
 <body>
   <h1>Welcome to ${title}</h1>
-  ${useJquery ? jqueryScript : ""}
+  ${scripts.join("\n  ")}
 </body>
 </html>`;
 }
