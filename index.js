@@ -3,17 +3,18 @@ const fs = require("fs");
 const path = require("path");
 const util = require("util");
 const inquirer = require("inquirer");
-const renderHtml = require("./render-html");
+const { renderHtml, BOOTSTRAP_4, RESET, NONE } = require("./render-html");
 
 const writeFile = util.promisify(fs.writeFile);
 const mkdir = util.promisify(fs.mkdir);
+const copyFile = util.promisify(fs.copyFile);
 
 main();
 
 async function main() {
   // prompt user for name of the site
   try {
-    const { siteTitle, useJquery, useBootstrap } = await inquirer.prompt([
+    const { siteTitle, useJquery, cssOption } = await inquirer.prompt([
       {
         name: "siteTitle",
         type: "input",
@@ -25,9 +26,23 @@ async function main() {
         message: "Include jQuery 3.5 from cdnjs?",
       },
       {
-        name: "useBootstrap",
-        type: "confirm",
-        message: "Include Bootstrap 4?",
+        name: "cssOption",
+        type: "list",
+        message: "Choose css reset/framework",
+        choices: [
+          {
+            name: "CSS Reset (myerweb.com 2.0)",
+            value: RESET,
+          },
+          {
+            name: "Bootstrap 4",
+            value: BOOTSTRAP_4,
+          },
+          {
+            name: "None",
+            value: NONE,
+          },
+        ],
       },
     ]);
     const siteName = siteTitle
@@ -42,9 +57,13 @@ async function main() {
       siteFolders.map((folder) => mkdir(path.join(sitePath, folder)))
     );
 
+    if (cssOption === RESET) {
+      await addCssReset(path.join(sitePath, "stylesheets/reset.css"));
+    }
+
     await writeFile(
       path.join(siteName, "index.html"),
-      renderHtml({ title: siteTitle, useJquery, useBootstrap })
+      renderHtml({ title: siteTitle, useJquery, cssOption })
     );
 
     // save html string in <site-name>/index.html
@@ -52,4 +71,9 @@ async function main() {
   } catch (error) {
     console.log(error);
   }
+}
+
+function addCssReset(destinationPath) {
+  const cssResetSourcePath = path.join(__dirname, "./assets/reset.css");
+  return copyFile(cssResetSourcePath, destinationPath);
 }
