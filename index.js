@@ -27,7 +27,7 @@ async function main() {
         name: "useBootstrap",
         type: "confirm",
         message: "Include Bootstrap 4?",
-      }
+      },
     ]);
     const siteName = siteTitle
       .replace(/[`~!@#$%^&*()|+=?;:'",.<>\{\}\[\]\\\/]/g, "")
@@ -59,8 +59,12 @@ function renderHtml({ title, useJquery, useBootstrap }) {
   const jquerySlimScript = `<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>`;
   const popperScript = `<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>`;
   const bs4Script = `<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>`;
+  
   const scripts = [];
-  if (useJquery) {
+  if (useJquery && useBootstrap) {
+    // don't use slim jquery
+    scripts.push(jqueryScript, popperScript, bs4Script);
+  } else if (useJquery) {
     scripts.push(jqueryScript);
   } else if (useBootstrap) {
     scripts.push(jquerySlimScript, popperScript, bs4Script);
