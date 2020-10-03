@@ -18,4 +18,6 @@ Answer the series of prompts and then your files and folders will be created. Th
 
 ## Live Stream
 
-This app was built during a live stream on YouTube. You can watch it [here](https://youtu.be/Iss22dKsx1c).
+This app was built during a live stream on YouTube.
+- [Part 1](https://youtu.be/Iss22dKsx1c)
+- [Part 2](https://youtu.be/OsaggsXKoo0)
